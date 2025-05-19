@@ -16,19 +16,34 @@ extension Signals {
     }
 }
 
+public enum SignalsScope {
+    case full, silentVerification
+}
+
 extension Prelude {
     /// Collect and dispatch signals to the Prelude API, relying on the default 2 seconds timeout.
-    public func dispatchSignals() async throws -> String {
-        try await dispatchSignals(timeout: 2.0)
+    /// - Parameter scope: signals data gathering scope.
+    public func dispatchSignals(
+        scope: SignalsScope = .full
+    ) async throws -> String {
+        try await dispatchSignals(
+            scope: scope,
+            timeout: configuration.timeout,
+            maxRetries: configuration.maxRetries
+        )
     }
 
     /// Collect and dispatch signals to the Prelude API, relying on the default 2 seconds timeout. It then
     /// calls the completion handler with the result.
+    /// - Parameter scope: signals data gathering scope.
     /// - Parameter completion: the completion handler.
-    public func dispatchSignals(completion: @escaping (Result<String, Error>) -> Void) throws {
+    public func dispatchSignals(
+        scope: SignalsScope = .full,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) throws {
         Task {
             do {
-                try await completion(.success(dispatchSignals()))
+                try await completion(.success(dispatchSignals(scope: scope)))
             } catch {
                 completion(.failure(error))
             }
@@ -36,23 +51,39 @@ extension Prelude {
     }
 
     /// Collect and dispatch signals to the Prelude API.
+    /// - Parameter scope: signals data gathering scope.
     /// - Parameter timeout: timeout for the dispatch operation HTTP requests.
     @available(iOS 16, *)
-    public func dispatchSignals(timeout: Duration) async throws -> String {
-        try await dispatchSignals(timeout: timeout.timeInterval())
+    public func dispatchSignals(
+        scope: SignalsScope = .full,
+        timeout: Duration
+    ) async throws -> String {
+        try await dispatchSignals(
+            scope: scope,
+            timeout: timeout.timeInterval(),
+            maxRetries: configuration.maxRetries,
+        )
     }
 
     /// Collect and dispatch signals to the Prelude API. It then calls the completion handler with the result.
+    /// - Parameter scope: signals data gathering scope.
     /// - Parameter timeout: timeout for the dispatch operation HTTP requests.
     /// - Parameter completion: the completion handler.
     @available(iOS 16, *)
     public func dispatchSignals(
+        scope: SignalsScope = .full,
         timeout: Duration,
         completion: @escaping (Result<String, Error>) -> Void
     ) throws {
         Task {
             do {
-                try await completion(.success(dispatchSignals(timeout: timeout.timeInterval())))
+                try await completion(.success(
+                    dispatchSignals(
+                        scope: scope,
+                        timeout: timeout.timeInterval(),
+                        maxRetries: self.configuration.maxRetries,
+                    ),
+                ))
             } catch {
                 completion(.failure(error))
             }
@@ -60,15 +91,21 @@ extension Prelude {
     }
 
     /// Collect and dispatch signals to the Prelude API.
+    /// - Parameter scope: signals data gathering scope.
     /// - Parameter timeout: timeout for the dispatch operation HTTP requests.
-    public func dispatchSignals(timeout: TimeInterval) async throws -> String {
+    /// - Parameter maxRetries: maximum number of automatic network retries in case of server error or timeout.
+    public func dispatchSignals(
+        scope: SignalsScope = .full,
+        timeout: TimeInterval,
+        maxRetries: Int,
+    ) async throws -> String {
         guard let endpointURL = URL(string: configuration.endpointAddress) else {
             throw SDKError.configurationError("cannot parse dispatch URL")
         }
 
         let signals = Signals()
         let payload = generatePayload(signals: signals, secret: retrieveTeamId())
-        let userAgent = "Prelude/\(Version.versionString) Core/\(coreVersion()) (\(System.userAgentString()))"
+        let userAgent = buildUserAgent()
         let availableNetworks = await AvailableNetworks.read()
 
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -83,17 +120,21 @@ extension Prelude {
                     userAgent: userAgent,
                     dispatchId: signals.id,
                     timeout: timeout,
+                    maxRetries: maxRetries,
                     interfaceType: .cellular
                 )
-                addNetworkTask(
-                    group: &group,
-                    sdkKey: configuration.sdkKey,
-                    endpointURL: endpointURL,
-                    userAgent: userAgent,
-                    dispatchId: signals.id,
-                    timeout: timeout,
-                    payload: payload
-                )
+                if scope == .full {
+                    addNetworkTask(
+                        group: &group,
+                        sdkKey: configuration.sdkKey,
+                        endpointURL: endpointURL,
+                        userAgent: userAgent,
+                        dispatchId: signals.id,
+                        timeout: timeout,
+                        maxRetries: maxRetries,
+                        payload: payload
+                    )
+                }
             case .onlyLan, .onlyCellular:
                 addNetworkTask(
                     group: &group,
@@ -102,7 +143,8 @@ extension Prelude {
                     userAgent: userAgent,
                     dispatchId: signals.id,
                     timeout: timeout,
-                    payload: payload
+                    maxRetries: maxRetries,
+                    payload: scope == .full ? payload : nil
                 )
             }
 
@@ -116,6 +158,25 @@ extension Prelude {
         return signals.id
     }
 
+    /// Collect and dispatch signals to the Prelude API. It then calls the completion handler with the result.
+    /// - Parameter scope: signals data gathering scope.
+    /// - Parameter timeout: timeout for the dispatch operation HTTP requests.
+    /// - Parameter completion: the completion handler.
+    public func dispatchSignals(
+        scope: SignalsScope = .full,
+        timeout: TimeInterval,
+        maxRetries: Int,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) throws {
+        Task {
+            do {
+                try await completion(.success(dispatchSignals(scope: scope, timeout: timeout, maxRetries: maxRetries)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     private func addNetworkTask(
         group: inout ThrowingTaskGroup<Void, any Error>,
         sdkKey: String,
@@ -123,6 +184,7 @@ extension Prelude {
         userAgent: String,
         dispatchId: String,
         timeout: TimeInterval,
+        maxRetries: Int,
         interfaceType: NWInterface.InterfaceType? = nil,
         payload: Data? = nil
     ) {
@@ -144,24 +206,9 @@ extension Prelude {
                 request.body(payload)
             }
             request.timeout(timeout)
+            request.maxRetries(maxRetries)
 
             _ = try await request.send()
-        }
-    }
-
-    /// Collect and dispatch signals to the Prelude API. It then calls the completion handler with the result.
-    /// - Parameter timeout: timeout for the dispatch operation HTTP requests.
-    /// - Parameter completion: the completion handler.
-    public func dispatchSignals(
-        timeout: TimeInterval,
-        completion: @escaping (Result<String, Error>) -> Void
-    ) throws {
-        Task {
-            do {
-                try await completion(.success(dispatchSignals(timeout: timeout)))
-            } catch {
-                completion(.failure(error))
-            }
         }
     }
 }
