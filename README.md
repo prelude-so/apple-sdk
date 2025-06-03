@@ -1,11 +1,12 @@
 # Readme
 ### Using the Swift SDK
 
-The Swift SDK allows you to capture certain device signals that will be reported back to Prelude.
+The Swift SDK allows you to capture certain device signals that will be reported back to Prelude and perform silent verification of mobile devices.
 
 It is provided as a regular Swift package that you can [import as a dependency directly into your iOS application](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
 
-Usage of the SDK is very simple, you just need to configure it with your SDK key (you can find it in your Prelude Dashboard) and call a single dispatch function:
+#### Gathering Device Signals
+Usage of the SDK to gather the signals very simple, you just need to configure it with your SDK key (you can find it in your Prelude Dashboard) and call a single dispatch function:
 
 ```
 let configuration = Configuration(sdkKey: "sdk_XXXXXXXXXXXX")
@@ -13,16 +14,24 @@ let prelude = Prelude(configuration)
 let dispatchID = try? await prelude.dispatchSignals()
 ```
 
-Once you get the dispatch ID you can report it back to your own API to be forwarded in subsequent network calls.
+Once you get the dispatch ID you should report it back to your own back-end API to be forwarded in subsequent network calls.
 
 There is no restriction on when to call this API, you just need to take this action before you need to report back the dispatch ID. It is advisable to make the request early on during the user onboarding process to have the dispatch id available when required.
 
+#### Silent Verification
+
+The Silent Verification feature allows you to verify a phone number without requiring the user to manually enter a verification code.
+
+It is available for certain carriers and requires a server-side service to handle the verification process. For this verification method to work properly, you must gather the device signals mentioned before and report the dispatch identifier to your backend (usually in your APIs verification endpoint).
+
+Please refer to the [Silent Verification documentation](https://docs.prelude.so/verify/silent/overview) for more information on how to implement this feature.
+
 #### CocoaPods integration
 
-We currently do not offer CocoaPods integration for the SDK, but creating one is a relatively straight forward process.
+We currently do not offer CocoaPods integration for the SDK, but creating one is a relatively straightforward process.
 The steps to take are:
 
-- Download the sourcecode from this repository, for example to a directory like `prelude-apple-sdk/sdk`.
+- Download the source code from this repository, for example to a directory like `prelude-apple-sdk/sdk`.
 - Open the `Package.swift` file and copy the url for the Core sdk defined in the binary target (similar to `https://prelude-public.s3.amazonaws.com/sdk/releases/apple/core/X.X.X/PreludeCore-X.X.X.xcframework.zip`).
 - Download the Core SDK from that url and unzip it to a subdirectory of the one above (for example `prelude-apple-sdk/sdk/core`). You should have a single subdirectory `PreludeCore.xcframework` under `prelude-apple-sdk/core`
 - Remove the `Package.swift` file.
