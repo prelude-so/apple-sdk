@@ -73,7 +73,7 @@ extension Request {
         self.maxRetries = maxRetries
     }
 
-    private func clone(maxRedirects: Int? = nil, retryAttempt: Int? = nil) -> Request {
+    private func clone(url: URL, maxRedirects: Int? = nil, retryAttempt: Int? = nil) -> Request {
         var request = Request(url, method: method)
         request.headers = headers
         request.followRedirects = followRedirects
@@ -183,11 +183,11 @@ extension Request {
                         if !self.followRedirects || self.maxRedirects == 0 {
                             continuation.resume(returning: nil)
                         } else {
-                            var request = self.clone(maxRedirects: self.maxRedirects - 1)
                             Task {
+                                var request = self.clone(url: url, maxRedirects: self.maxRedirects - 1)
+
                                 do {
-                                    let redirectResult = try await request.send()
-                                    continuation.resume(returning: redirectResult)
+                                    try await continuation.resume(returning: request.send())
                                 } catch {
                                     continuation.resume(throwing: error)
                                 }
@@ -217,7 +217,7 @@ extension Request {
                 do {
                     try await Task.sleep(nanoseconds: UInt64(totalDelay * 1_000_000_000))
 
-                    let result = try await self.clone(retryAttempt: self.retryAttempt + 1).send()
+                    let result = try await self.clone(url: self.url, retryAttempt: self.retryAttempt + 1).send()
                     continuation.resume(returning: result)
                 } catch {
                     continuation.resume(throwing: error)
