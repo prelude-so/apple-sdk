@@ -67,7 +67,7 @@ extension Request {
         self.timeout = timeout
     }
 
-    /// Set the max number of automatic retries in case of a timeout or server error.
+    /// Set the maximum number of automatic retries in case of a timeout or server error.
     /// - Parameter maxRetries: the maximum number of retries.
     mutating func maxRetries(_ maxRetries: Int) {
         self.maxRetries = maxRetries
@@ -86,7 +86,6 @@ extension Request {
     }
 
     /// Send the HTTP request.
-    /// - Parameter completion: the send completion handler.
     func send() async throws -> Data? {
         guard let host = url.host else {
             throw SDKError.internalError("missing URL host")

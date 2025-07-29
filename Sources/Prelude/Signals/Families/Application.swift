@@ -21,8 +21,7 @@ extension Application: CollectableFamily {
         return Application(
             name: name,
             version: version,
-            platform: .apple(.init(buildVersion: buildVersion,
-                                   bundleId: bundleId))
+            platform: .apple(.init(buildVersion: buildVersion, bundleId: bundleId))
         )
     }
 }

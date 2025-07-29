@@ -5,7 +5,7 @@ enum Sysctl {
     /// Get string value for a given set of keys.
     /// - Parameter keys: the keys to query.
     /// - Returns: the string value, if any.
-    public static func string(for keys: [Int32]) throws -> String? {
+    static func string(for keys: [Int32]) throws -> String? {
         try data(for: keys).withUnsafeBufferPointer { pointer -> String? in
             pointer.baseAddress.flatMap { String(validatingUTF8: $0) }
         }
@@ -16,7 +16,7 @@ enum Sysctl {
     ///   - to: the type of the value.
     ///   - keys: the keys to query.
     /// - Returns: the value, if any.
-    public static func value<T>(to _: T.Type, for keys: [Int32]) throws -> T? {
+    static func value<T>(to _: T.Type, for keys: [Int32]) throws -> T? {
         try data(for: keys).withUnsafeBufferPointer { pointer -> T? in
             pointer.baseAddress?.withMemoryRebound(to: T.self, capacity: 1) { $0.pointee }
         }
