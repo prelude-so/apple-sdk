@@ -1,12 +1,12 @@
 # Readme
-### Using the Swift SDK
+### Usage
 
-The Swift SDK allows you to capture certain device signals that will be reported back to Prelude and perform silent verification of mobile devices.
+The Apple SDK allows you to capture certain device signals that will be reported back to Prelude and perform silent verification of mobile devices.
 
 It is provided as a regular Swift package that you can [import as a dependency directly into your iOS application](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
 
 #### Gathering Device Signals
-Usage of the SDK to gather the signals very simple, you just need to configure it with your SDK key (you can find it in your Prelude Dashboard) and call a single dispatch function:
+Usage of the SDK to gather the signals very simple, you just need to configure it with your SDK key and call a single dispatch function:
 
 ```
 let configuration = Configuration(sdkKey: "sdk_XXXXXXXXXXXX")
@@ -14,9 +14,11 @@ let prelude = Prelude(configuration)
 let dispatchID = try? await prelude.dispatchSignals()
 ```
 
+***Important: When you generate the SDK key in the Prelude dashboard you will be able to copy it and you should store it somewhere secure, as the dashboard will not allow you to display the same key again.***
+
 Once you get the dispatch ID you should report it back to your own back-end API to be forwarded in subsequent network calls.
 
-There is no restriction on when to call this API, you just need to take this action before you need to report back the dispatch ID. It is advisable to make the request early on during the user onboarding process to have the dispatch id available when required.
+There is no restriction on when to call this API, you just need to take this action before you need to report back the dispatch ID. The recommended way of integrating it is to call the `dispatchSignals` function before displaying the phone number verification screen in your application. This way you can ensure that the device signals are captured and the `dispatchID` can be sent to your back-end with the phone number. Your back-end will then perform the verification call to Prelude with the phone number and the dispatch identifier.
 
 #### Silent Verification
 

@@ -153,15 +153,15 @@ extension BatteryState {
     static func from(_ state: UIDevice.BatteryState) -> Self? {
         switch state {
         case .unknown:
-            return .unknown
+            .unknown
         case .unplugged:
-            return .unplugged
+            .unplugged
         case .charging:
-            return .charging
+            .charging
         case .full:
-            return .full
+            .full
         default:
-            return .unspecified
+            .unspecified
         }
     }
 }
