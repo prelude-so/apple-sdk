@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 enum AvailableNetworks {
-    case cellularOnly, lanOnly, lanAndCellular
+    case cellularOnly, lanOnly, lanAndCellular, vpn
 }
 
 extension DispatchQueue {
@@ -12,7 +12,7 @@ extension DispatchQueue {
     )
 }
 
-func getAvailableNetworks() async -> AvailableNetworks? {
+func getAvailableNetworks(vpnEnabled: Bool) async -> AvailableNetworks? {
     await withCheckedContinuation { continuation in
         let networkMonitor = NWPathMonitor()
         networkMonitor.pathUpdateHandler = { path in
@@ -23,16 +23,19 @@ func getAvailableNetworks() async -> AvailableNetworks? {
                     },
                     path.availableInterfaces.contains {
                         $0.type == .cellular
-                    }
+                    },
+                    vpnEnabled
                 ) {
-                case (true, true):
+                case (true, true, false):
                     .lanAndCellular
-                case (true, false):
+                case (true, false, false):
                     .lanOnly
-                case (false, true):
+                case (false, true, false):
                     .cellularOnly
-                case (false, false):
+                case (false, false, false):
                     .none
+                case (_, _, true):
+                    .vpn
                 }
 
             networkMonitor.cancel()

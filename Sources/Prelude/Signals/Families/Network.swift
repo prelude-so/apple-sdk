@@ -22,9 +22,22 @@ extension Network: CollectableFamily {
             return Array(value.values.map { $0.dropPrefix("CTRadioAccessTechnology") })
         }
 
+        var vpnEnabled: Bool {
+            guard let settings = CFNetworkCopySystemProxySettings()?.takeRetainedValue() as? NSDictionary,
+                  let scoped = settings["__SCOPED__"] as? NSDictionary,
+                  let allKeys = scoped.allKeys as? [String] else {
+                return false
+            }
+            let keywords = ["tap", "tun", "ppp", "ipsec", "utun"]
+            return allKeys.contains { key in
+                keywords.contains { key.contains($0) }
+            }
+        }
+
         return Network(
             cellularData: cellularData,
-            cellularTechnologies: cellularTechnologies
+            cellularTechnologies: cellularTechnologies,
+            vpnEnabled: vpnEnabled
         )
     }
 }

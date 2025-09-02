@@ -796,10 +796,12 @@ internal struct ApplicationWebPlatform {
     internal var multiTouchDevice: Bool?
     internal var mediaCapabilities: String?
     internal var maybeHeadless: Bool?
+    internal var pluginsDigest: String?
+    internal var webGlEnabled: Bool?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    internal init(userAgent: String?, connectionType: String?, rtt: Int32?, cookiesEnabled: Bool?, indexedDbEnabled: Bool?, localStorageEnabled: Bool?, doNotTrack: String?, multiTouchDevice: Bool?, mediaCapabilities: String?, maybeHeadless: Bool?) {
+    internal init(userAgent: String?, connectionType: String?, rtt: Int32?, cookiesEnabled: Bool?, indexedDbEnabled: Bool?, localStorageEnabled: Bool?, doNotTrack: String?, multiTouchDevice: Bool?, mediaCapabilities: String?, maybeHeadless: Bool?, pluginsDigest: String?, webGlEnabled: Bool?) {
         self.userAgent = userAgent
         self.connectionType = connectionType
         self.rtt = rtt
@@ -810,6 +812,8 @@ internal struct ApplicationWebPlatform {
         self.multiTouchDevice = multiTouchDevice
         self.mediaCapabilities = mediaCapabilities
         self.maybeHeadless = maybeHeadless
+        self.pluginsDigest = pluginsDigest
+        self.webGlEnabled = webGlEnabled
     }
 }
 
@@ -850,6 +854,12 @@ extension ApplicationWebPlatform: Equatable, Hashable {
         if lhs.maybeHeadless != rhs.maybeHeadless {
             return false
         }
+        if lhs.pluginsDigest != rhs.pluginsDigest {
+            return false
+        }
+        if lhs.webGlEnabled != rhs.webGlEnabled {
+            return false
+        }
         return true
     }
 
@@ -864,6 +874,8 @@ extension ApplicationWebPlatform: Equatable, Hashable {
         hasher.combine(multiTouchDevice)
         hasher.combine(mediaCapabilities)
         hasher.combine(maybeHeadless)
+        hasher.combine(pluginsDigest)
+        hasher.combine(webGlEnabled)
     }
 }
 
@@ -885,7 +897,9 @@ internal struct FfiConverterTypeApplicationWebPlatform: FfiConverterRustBuffer {
                 doNotTrack: FfiConverterOptionString.read(from: &buf), 
                 multiTouchDevice: FfiConverterOptionBool.read(from: &buf), 
                 mediaCapabilities: FfiConverterOptionString.read(from: &buf), 
-                maybeHeadless: FfiConverterOptionBool.read(from: &buf)
+                maybeHeadless: FfiConverterOptionBool.read(from: &buf), 
+                pluginsDigest: FfiConverterOptionString.read(from: &buf), 
+                webGlEnabled: FfiConverterOptionBool.read(from: &buf)
         )
     }
 
@@ -900,6 +914,8 @@ internal struct FfiConverterTypeApplicationWebPlatform: FfiConverterRustBuffer {
         FfiConverterOptionBool.write(value.multiTouchDevice, into: &buf)
         FfiConverterOptionString.write(value.mediaCapabilities, into: &buf)
         FfiConverterOptionBool.write(value.maybeHeadless, into: &buf)
+        FfiConverterOptionString.write(value.pluginsDigest, into: &buf)
+        FfiConverterOptionBool.write(value.webGlEnabled, into: &buf)
     }
 }
 
@@ -1324,12 +1340,14 @@ internal func FfiConverterTypeHardware_lower(_ value: Hardware) -> RustBuffer {
 internal struct Network {
     internal var cellularData: Bool?
     internal var cellularTechnologies: [String]?
+    internal var vpnEnabled: Bool?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    internal init(cellularData: Bool?, cellularTechnologies: [String]?) {
+    internal init(cellularData: Bool?, cellularTechnologies: [String]?, vpnEnabled: Bool?) {
         self.cellularData = cellularData
         self.cellularTechnologies = cellularTechnologies
+        self.vpnEnabled = vpnEnabled
     }
 }
 
@@ -1346,12 +1364,16 @@ extension Network: Equatable, Hashable {
         if lhs.cellularTechnologies != rhs.cellularTechnologies {
             return false
         }
+        if lhs.vpnEnabled != rhs.vpnEnabled {
+            return false
+        }
         return true
     }
 
     internal func hash(into hasher: inout Hasher) {
         hasher.combine(cellularData)
         hasher.combine(cellularTechnologies)
+        hasher.combine(vpnEnabled)
     }
 }
 
@@ -1365,13 +1387,15 @@ internal struct FfiConverterTypeNetwork: FfiConverterRustBuffer {
         return
             try Network(
                 cellularData: FfiConverterOptionBool.read(from: &buf), 
-                cellularTechnologies: FfiConverterOptionSequenceString.read(from: &buf)
+                cellularTechnologies: FfiConverterOptionSequenceString.read(from: &buf), 
+                vpnEnabled: FfiConverterOptionBool.read(from: &buf)
         )
     }
 
     internal static func write(_ value: Network, into buf: inout [UInt8]) {
         FfiConverterOptionBool.write(value.cellularData, into: &buf)
         FfiConverterOptionSequenceString.write(value.cellularTechnologies, into: &buf)
+        FfiConverterOptionBool.write(value.vpnEnabled, into: &buf)
     }
 }
 
@@ -1575,6 +1599,9 @@ extension ApplicationPlatform: Equatable, Hashable {}
 
 
 
+
+
+
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 
@@ -1663,6 +1690,9 @@ extension BatteryState: Equatable, Hashable {}
 
 
 
+
+
+
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 
@@ -1741,6 +1771,9 @@ internal func FfiConverterTypePlatform_lower(_ value: Platform) -> RustBuffer {
 
 
 extension Platform: Equatable, Hashable {}
+
+
+
 
 
 

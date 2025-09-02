@@ -106,7 +106,7 @@ extension Prelude {
         let signals = Signals()
         let payload = generatePayload(signals: signals, secret: retrieveTeamIdentifier())
         let userAgent = buildUserAgent()
-        let availableNetworks = await getAvailableNetworks()
+        let availableNetworks = await getAvailableNetworks(vpnEnabled: signals.network.vpnEnabled ?? false)
         try await withThrowingTaskGroup(of: Void.self) { group in
             switch availableNetworks {
             case .none:
@@ -136,7 +136,7 @@ extension Prelude {
                         implementedFeatures: configuration.implementedFeatures
                     )
                 }
-            case .lanOnly, .cellularOnly:
+            case .lanOnly, .cellularOnly, .vpn:
                 addNetworkTask(
                     group: &group,
                     sdkKey: configuration.sdkKey,
