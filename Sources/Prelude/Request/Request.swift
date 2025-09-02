@@ -93,7 +93,9 @@ extension Request {
 
         let parameters = NWParameters(tls: .init())
         parameters.preferNoProxies = true
-        parameters.requiredInterfaceType = interfaceType
+        if interfaceType != .other {
+            parameters.requiredInterfaceType = interfaceType
+        }
 
         let request = CFHTTPMessageCreateRequest(
             nil,
