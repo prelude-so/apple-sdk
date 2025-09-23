@@ -22,6 +22,7 @@ extension Prelude {
         var request = Request(url, method: "GET")
         request.header("Connection", "close")
         request.header("User-Agent", buildUserAgent())
+        request.header("Accept", "text/html;q=0.9,application/xhtml+xml,application/xml,application/json,*/*;q=0.8")
         request.followRedirects(true)
         request.interfaceType(.cellular)
         request.timeout(timeout)
