@@ -6,7 +6,7 @@ The Apple SDK allows you to capture certain device signals that will be reported
 It is provided as a regular Swift package that you can [import as a dependency directly into your iOS application](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
 
 #### Gathering Device Signals
-Usage of the SDK to gather the signals very simple, you just need to configure it with your SDK key and call a single dispatch function:
+Usage of the SDK to gather the signals is very simple, you just need to configure it with your SDK key and call a single dispatch function:
 
 ```
 let configuration = Configuration(sdkKey: "sdk_XXXXXXXXXXXX")
@@ -14,7 +14,7 @@ let prelude = Prelude(configuration)
 let dispatchID = try? await prelude.dispatchSignals()
 ```
 
-***Important: When you generate the SDK key in the Prelude dashboard you will be able to copy it and you should store it somewhere secure, as the dashboard will not allow you to display the same key again.***
+***Important: When you generate the SDK key in the [Prelude dashboard](https://app.prelude.so/) you will be able to copy it and you should store it somewhere secure, as the dashboard will not allow you to display the same key again.***
 
 Once you get the dispatch ID you should report it back to your own back-end API to be forwarded in subsequent network calls.
 
@@ -26,7 +26,7 @@ The Silent Verification feature allows you to verify a phone number without requ
 
 It is available for certain carriers and requires a server-side service to handle the verification process. For this verification method to work properly, you must gather the device signals mentioned before and report the dispatch identifier to your backend (usually in your APIs verification endpoint).
 
-Please refer to the [Silent Verification documentation](https://docs.prelude.so/verify/silent/overview) for more information on how to implement this feature.
+Please refer to the [Silent Verification documentation](https://docs.prelude.so/verify/verify/v2/documentation/silent-verification) for more information on how to implement this feature.
 
 #### CocoaPods integration
 
