@@ -12,10 +12,10 @@ public struct Configuration {
     var implementedFeatures: Features = []
 
     /// The request timeout in seconds
-    var timeout: TimeInterval = 2.0
+    var timeout: TimeInterval = 5.0
 
     /// The maximum number of network retries in case of server error or timeout
-    var maxRetries: Int = 0
+    var maxRetries: Int = 3
 
     /// Initialize the configuration.
     /// - Parameters:
@@ -27,8 +27,8 @@ public struct Configuration {
         sdkKey: String,
         endpoint: Endpoint = .default,
         implementedFeatures: Features = [],
-        timeout: TimeInterval = 2.0,
-        maxRetries: Int = 0
+        timeout: TimeInterval = 5.0,
+        maxRetries: Int = 3
     ) {
         self.sdkKey = sdkKey
         self.endpoint = endpoint

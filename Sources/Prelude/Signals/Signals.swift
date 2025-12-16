@@ -61,7 +61,7 @@ extension Prelude {
         try await dispatchSignals(
             scope: scope,
             timeout: timeout.timeInterval(),
-            maxRetries: configuration.maxRetries,
+            maxRetries: configuration.maxRetries
         )
     }
 
@@ -81,8 +81,8 @@ extension Prelude {
                     dispatchSignals(
                         scope: scope,
                         timeout: timeout.timeInterval(),
-                        maxRetries: self.configuration.maxRetries,
-                    ),
+                        maxRetries: self.configuration.maxRetries
+                    )
                 ))
             } catch {
                 completion(.failure(error))
@@ -97,7 +97,7 @@ extension Prelude {
     public func dispatchSignals(
         scope: SignalsScope = .full,
         timeout: TimeInterval,
-        maxRetries: Int,
+        maxRetries: Int
     ) async throws -> String {
         guard let endpointURL = URL(string: configuration.endpointAddress) else {
             throw SDKError.configurationError("cannot parse dispatch URL")
@@ -107,7 +107,7 @@ extension Prelude {
         let payload = generatePayload(signals: signals, secret: retrieveTeamIdentifier())
         let userAgent = buildUserAgent()
         let availableNetworks = await getAvailableNetworks(vpnEnabled: signals.network.vpnEnabled ?? false)
-        try await withThrowingTaskGroup(of: Void.self) { group in
+        try await withThrowingTaskGroup(of: (hasPayload: Bool, error: Error?).self) { group in
             switch availableNetworks {
             case .none:
                 throw SDKError.requestError("no available network interfaces")
@@ -121,6 +121,7 @@ extension Prelude {
                     timeout: timeout,
                     maxRetries: maxRetries,
                     interfaceType: .cellular,
+                    payload: nil,
                     implementedFeatures: configuration.implementedFeatures
                 )
                 if scope == .full {
@@ -132,6 +133,7 @@ extension Prelude {
                         dispatchId: signals.id,
                         timeout: timeout,
                         maxRetries: maxRetries,
+                        interfaceType: nil,
                         payload: payload,
                         implementedFeatures: configuration.implementedFeatures
                     )
@@ -145,15 +147,32 @@ extension Prelude {
                     dispatchId: signals.id,
                     timeout: timeout,
                     maxRetries: maxRetries,
+                    interfaceType: nil,
                     payload: scope == .full ? payload : nil,
                     implementedFeatures: configuration.implementedFeatures
                 )
             }
 
-            do {
-                try await group.waitForAll()
-            } catch {
-                throw SDKError.requestError("one or more requests failed to execute: \(error)")
+            var hasAnyPayloadRequest = false
+            var payloadRequestFailed = false
+            var errors: [Error] = []
+
+            for try await result in group {
+                if result.hasPayload {
+                    hasAnyPayloadRequest = true
+                    if let error = result.error {
+                        payloadRequestFailed = true
+                        errors.append(error)
+                    }
+                } else if let error = result.error {
+                    errors.append(error)
+                }
+            }
+
+            if payloadRequestFailed || (!hasAnyPayloadRequest && !errors.isEmpty) {
+                let errorMessages = errors.map(\.localizedDescription).joined(separator: "; ")
+                let prefix = errors.count == 1 ? "" : "Multiple requests failed. "
+                throw SDKError.requestError("\(prefix)\(errorMessages)")
             }
         }
 
@@ -184,21 +203,22 @@ extension Prelude {
     }
 
     private func addNetworkTask(
-        group: inout ThrowingTaskGroup<Void, any Error>,
+        group: inout ThrowingTaskGroup<(hasPayload: Bool, error: Error?), any Error>,
         sdkKey: String,
         endpointURL: URL,
         userAgent: String,
         dispatchId: String,
         timeout: TimeInterval,
         maxRetries: Int,
-        interfaceType: NWInterface.InterfaceType? = nil,
-        payload: Data? = nil,
+        interfaceType: NWInterface.InterfaceType?,
+        payload: Data?,
         implementedFeatures: Features
     ) {
         group.addTask {
+            let hasPayload = payload != nil
             var request = Request(
                 endpointURL.appendingPathComponent("/v1/signals"),
-                method: payload != nil ? "POST" : "OPTIONS"
+                method: hasPayload ? "POST" : "OPTIONS"
             )
             request.header("Connection", "close")
             request.header("User-Agent", userAgent)
@@ -216,7 +236,12 @@ extension Prelude {
             request.timeout(timeout)
             request.maxRetries(maxRetries)
 
-            _ = try await request.send()
+            do {
+                _ = try await request.send()
+                return (hasPayload: hasPayload, error: nil)
+            } catch {
+                return (hasPayload: hasPayload, error: error)
+            }
         }
     }
 }
