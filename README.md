@@ -26,7 +26,7 @@ The Silent Verification feature allows you to verify a phone number without requ
 
 It is available for certain carriers and requires a server-side service to handle the verification process. For this verification method to work properly, you must gather the device signals mentioned before and report the dispatch identifier to your backend (usually in your APIs verification endpoint).
 
-Please refer to the [Silent Verification documentation](https://docs.prelude.so/verify/verify/v2/documentation/silent-verification) for more information on how to implement this feature.
+Please refer to the [Silent Verification documentation](https://docs.prelude.so/verify/v2/documentation/silent-verification) for more information on how to implement this feature.
 
 #### CocoaPods integration
 
