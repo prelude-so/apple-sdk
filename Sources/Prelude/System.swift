@@ -9,7 +9,7 @@ enum System {
     /// The platform name.
     static let platform = "Apple"
 
-    /// The system name.
+    // The system name.
     #if os(iOS)
         static let name: String? = UIDevice.current.systemName
     #elseif os(macOS)
@@ -18,7 +18,7 @@ enum System {
         static let name: String? = nil
     #endif
 
-    /// The system version.
+    // The system version.
     #if os(iOS)
         static let version: String? = UIDevice.current.systemVersion
     #elseif os(macOS)
