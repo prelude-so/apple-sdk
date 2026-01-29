@@ -8,7 +8,7 @@ public struct Configuration {
     /// The endpoint address of the Prelude API.
     var endpoint: Endpoint
 
-    // The list of features to be advertised as supported by the local implementation of the Prelude SDK.
+    /// The list of features to be advertised as supported by the local implementation of the Prelude SDK.
     var implementedFeatures: Features = []
 
     /// The request timeout in seconds

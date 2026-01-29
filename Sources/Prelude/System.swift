@@ -9,21 +9,25 @@ enum System {
     /// The platform name.
     static let platform = "Apple"
 
-    /// The system name.
     #if os(iOS)
+        /// The system name.
         static let name: String? = UIDevice.current.systemName
     #elseif os(macOS)
+        /// The system name.
         static let name: String? = "macOS"
     #else
+        /// The system name.
         static let name: String? = nil
     #endif
 
-    /// The system version.
     #if os(iOS)
+        /// The system version.
         static let version: String? = UIDevice.current.systemVersion
     #elseif os(macOS)
+        /// The system version.
         static let version: String? = ProcessInfo.processInfo.operatingSystemVersionString
     #else
+        /// The system version.
         static let version: String? = nil
     #endif
 

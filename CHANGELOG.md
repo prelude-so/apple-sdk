@@ -2,6 +2,10 @@
 
 Prelude Apple SDK Change Log
 
+## [0.3.0] - 2026-01-29
+
+- Added specific configurations for Silent Verification requests, enabling carrier-specific behavior.
+
 ## [0.2.5] - 2025-12-16
 
 - Change default timeouts and retry count for the dispatch signals request. By default, requests now time out after 5 seconds and retries happen automatically up to three times.

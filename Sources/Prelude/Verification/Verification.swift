@@ -19,10 +19,15 @@ extension Prelude {
         url: URL,
         timeout: TimeInterval
     ) async throws -> String {
+        let quirks = ProviderQuirks.forURL(url)
+
         var request = Request(url, method: "GET")
         request.header("Connection", "close")
         request.header("User-Agent", buildUserAgent())
-        request.header("Accept", "text/html;q=0.9,application/xhtml+xml,application/xml,application/json,*/*;q=0.8")
+        request.header("Accept", "*/*")
+        for (key, value) in quirks.headers {
+            request.header(key, value)
+        }
         request.followRedirects(true)
         request.interfaceType(.cellular)
         request.timeout(timeout)
