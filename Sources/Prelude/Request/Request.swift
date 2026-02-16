@@ -3,6 +3,8 @@ import Network
 
 /// Request is a network HTTP request.
 struct Request {
+    private static let perHopTimeout: TimeInterval = 5.0
+
     private var url: URL
 
     private var method: String
@@ -22,6 +24,8 @@ struct Request {
     private var maxRetries: Int = 0
 
     private var retryAttempt: Int = 0
+
+    private var operationDeadline: Date?
 
     /// Create a new network HTTP request.
     /// - Parameters:
@@ -73,6 +77,14 @@ extension Request {
         self.maxRetries = maxRetries
     }
 
+    /// Set the total operation timeout. The request (including all redirects and retries)
+    /// must complete within this duration. Each individual hop uses a shorter per-hop timeout,
+    /// capped at the remaining operation time.
+    /// - Parameter timeout: the total operation timeout.
+    mutating func operationTimeout(_ timeout: TimeInterval) {
+        operationDeadline = Date().addingTimeInterval(timeout)
+    }
+
     private func clone(url: URL, maxRedirects: Int? = nil, retryAttempt: Int? = nil) -> Request {
         var request = Request(url, method: method)
         request.headers = headers
@@ -82,11 +94,16 @@ extension Request {
         request.timeout = timeout
         request.maxRetries = maxRetries
         request.retryAttempt = retryAttempt ?? self.retryAttempt
+        request.operationDeadline = operationDeadline
         return request
     }
 
     /// Send the HTTP request.
     func send() async throws -> Data? {
+        if hasTimedOut() {
+            throw SDKError.requestError("Operation timed out.")
+        }
+
         guard let host = url.host else {
             throw SDKError.internalError("missing URL host")
         }
@@ -109,7 +126,7 @@ extension Request {
                                          host as CFString)
         CFHTTPMessageSetHeaderFieldValue(request,
                                          "X-SDK-Request-Date" as CFString,
-                                         ISO8601DateFormatter().string(from: Date()) as CFString)
+                                         Date().RFC3339Format() as CFString)
         for (key, value) in headers {
             CFHTTPMessageSetHeaderFieldValue(request, key as CFString, value as CFString)
         }
@@ -129,7 +146,7 @@ extension Request {
         }
 
         let connection = NWConnection(to: NWEndpoint.url(url), using: parameters)
-        let timer = deadline(for: connection, timeout: timeout)
+        let timer = deadline(for: connection, timeout: effectiveHopTimeout())
 
         connection.stateUpdateHandler = { state in
             switch state {
@@ -183,9 +200,11 @@ extension Request {
                     case let .redirect(method, url):
                         if !self.followRedirects || self.maxRedirects == 0 {
                             continuation.resume(returning: nil)
+                        } else if self.hasTimedOut() {
+                            continuation.resume(throwing: SDKError.requestError("Operation timed out."))
                         } else {
                             Task {
-                                var request = self.clone(url: url, maxRedirects: self.maxRedirects - 1)
+                                var request = self.clone(url: url, maxRedirects: self.maxRedirects - 1, retryAttempt: 0)
 
                                 do {
                                     try await continuation.resume(returning: request.send())
@@ -209,8 +228,28 @@ extension Request {
         error.localizedDescription.contains("Operation canceled")
     }
 
+    private func hasTimedOut() -> Bool {
+        guard let deadline = operationDeadline else {
+            return false
+        }
+        return deadline.timeIntervalSinceNow <= 0
+    }
+
+    private func effectiveHopTimeout() -> TimeInterval {
+        guard let deadline = operationDeadline else {
+            return timeout
+        }
+        let remaining = deadline.timeIntervalSinceNow
+        guard remaining > 0 else {
+            return 0
+        }
+        return min(Self.perHopTimeout, remaining)
+    }
+
     private func handleRetry(continuation: CheckedContinuation<Data?, Error>) {
-        if maxRetries > 0, retryAttempt <= maxRetries {
+        if hasTimedOut() {
+            continuation.resume(throwing: SDKError.requestError("Operation timed out."))
+        } else if maxRetries > 0, retryAttempt < maxRetries {
             Task {
                 let requestDelay = pow(2.0, Double(self.retryAttempt)) * 0.25
                 let totalDelay = min(requestDelay, 10.0) // Cap at 10 seconds

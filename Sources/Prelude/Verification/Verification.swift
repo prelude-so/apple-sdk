@@ -2,13 +2,13 @@ import Foundation
 
 extension Prelude {
     /// Perform silent phone number verification towards the cellular carrier's network, relying on the
-    /// default 10 seconds timeout.
+    /// default 20 seconds timeout.
     /// - Parameter url: the request URL received from the back-end server.
     /// - Returns: a string representing the check code to send back to the back-end server.
     public func verifySilent(
         url: URL
     ) async throws -> String {
-        try await verifySilent(url: url, timeout: 10.0)
+        try await verifySilent(url: url, timeout: 20.0)
     }
 
     /// Perform silent phone number verification towards the cellular carrier's network.
@@ -30,23 +30,21 @@ extension Prelude {
         }
         request.followRedirects(true)
         request.interfaceType(.cellular)
-        request.timeout(timeout)
+        request.operationTimeout(timeout)
+        request.maxRetries(configuration.maxRetries)
 
-        let data = try? await request.send()
-        guard let data,
-              let code = String(data: data, encoding: .utf8) else {
+        guard let data = try await request.send() else {
             throw SDKError.requestError("failed to execute silent verification request")
         }
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-        let response = try? decoder.decode(SilentCompleteResponse.self, from: data)
-        guard let code = response?.code else {
+        guard let response = try? decoder.decode(SilentCompleteResponse.self, from: data) else {
             throw SDKError.requestError("failed to retrieve code from silent verification request")
         }
 
-        return code
+        return response.code
     }
 
     /// Perform silent phone number verification towards the cellular carrier's network.
@@ -55,7 +53,7 @@ extension Prelude {
     /// - Parameter completion: the completion handler.
     public func verifySilent(
         url: URL,
-        timeout: TimeInterval = 10.0,
+        timeout: TimeInterval = 20.0,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         Task {
@@ -86,7 +84,7 @@ extension Prelude {
     @available(iOS 16, *)
     public func verifySilent(
         url: URL,
-        timeout: Duration = .seconds(10),
+        timeout: Duration = .seconds(20),
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         Task {

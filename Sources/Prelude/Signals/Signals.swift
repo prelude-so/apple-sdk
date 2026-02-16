@@ -104,7 +104,7 @@ extension Prelude {
         }
 
         let signals = Signals()
-        let payload = generatePayload(signals: signals, secret: retrieveTeamIdentifier())
+        lazy var payload = generatePayload(signals: signals, secret: retrieveTeamIdentifier())
         let userAgent = buildUserAgent()
         let availableNetworks = await getAvailableNetworks(vpnEnabled: signals.network.vpnEnabled ?? false)
         try await withThrowingTaskGroup(of: (hasPayload: Bool, error: Error?).self) { group in
