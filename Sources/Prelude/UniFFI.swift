@@ -571,13 +571,15 @@ internal struct Application {
     internal var name: String?
     internal var version: String?
     internal var platform: ApplicationPlatform?
+    internal var sdkInfo: ApplicationSdkInfo?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    internal init(name: String?, version: String?, platform: ApplicationPlatform?) {
+    internal init(name: String?, version: String?, platform: ApplicationPlatform?, sdkInfo: ApplicationSdkInfo?) {
         self.name = name
         self.version = version
         self.platform = platform
+        self.sdkInfo = sdkInfo
     }
 }
 
@@ -597,6 +599,9 @@ extension Application: Equatable, Hashable {
         if lhs.platform != rhs.platform {
             return false
         }
+        if lhs.sdkInfo != rhs.sdkInfo {
+            return false
+        }
         return true
     }
 
@@ -604,6 +609,7 @@ extension Application: Equatable, Hashable {
         hasher.combine(name)
         hasher.combine(version)
         hasher.combine(platform)
+        hasher.combine(sdkInfo)
     }
 }
 
@@ -618,7 +624,8 @@ internal struct FfiConverterTypeApplication: FfiConverterRustBuffer {
             try Application(
                 name: FfiConverterOptionString.read(from: &buf), 
                 version: FfiConverterOptionString.read(from: &buf), 
-                platform: FfiConverterOptionTypeApplicationPlatform.read(from: &buf)
+                platform: FfiConverterOptionTypeApplicationPlatform.read(from: &buf), 
+                sdkInfo: FfiConverterOptionTypeApplicationSdkInfo.read(from: &buf)
         )
     }
 
@@ -626,6 +633,7 @@ internal struct FfiConverterTypeApplication: FfiConverterRustBuffer {
         FfiConverterOptionString.write(value.name, into: &buf)
         FfiConverterOptionString.write(value.version, into: &buf)
         FfiConverterOptionTypeApplicationPlatform.write(value.platform, into: &buf)
+        FfiConverterOptionTypeApplicationSdkInfo.write(value.sdkInfo, into: &buf)
     }
 }
 
@@ -782,6 +790,76 @@ internal func FfiConverterTypeApplicationApplePlatform_lift(_ buf: RustBuffer) t
 #endif
 internal func FfiConverterTypeApplicationApplePlatform_lower(_ value: ApplicationApplePlatform) -> RustBuffer {
     return FfiConverterTypeApplicationApplePlatform.lower(value)
+}
+
+
+internal struct ApplicationSdkInfo {
+    internal var sdkVersion: String?
+    internal var coreVersion: String?
+
+    // Default memberwise initializers are never public by default, so we
+    // declare one manually.
+    internal init(sdkVersion: String?, coreVersion: String?) {
+        self.sdkVersion = sdkVersion
+        self.coreVersion = coreVersion
+    }
+}
+
+#if compiler(>=6)
+extension ApplicationSdkInfo: Sendable {}
+#endif
+
+
+extension ApplicationSdkInfo: Equatable, Hashable {
+    internal static func ==(lhs: ApplicationSdkInfo, rhs: ApplicationSdkInfo) -> Bool {
+        if lhs.sdkVersion != rhs.sdkVersion {
+            return false
+        }
+        if lhs.coreVersion != rhs.coreVersion {
+            return false
+        }
+        return true
+    }
+
+    internal func hash(into hasher: inout Hasher) {
+        hasher.combine(sdkVersion)
+        hasher.combine(coreVersion)
+    }
+}
+
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal struct FfiConverterTypeApplicationSdkInfo: FfiConverterRustBuffer {
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> ApplicationSdkInfo {
+        return
+            try ApplicationSdkInfo(
+                sdkVersion: FfiConverterOptionString.read(from: &buf), 
+                coreVersion: FfiConverterOptionString.read(from: &buf)
+        )
+    }
+
+    internal static func write(_ value: ApplicationSdkInfo, into buf: inout [UInt8]) {
+        FfiConverterOptionString.write(value.sdkVersion, into: &buf)
+        FfiConverterOptionString.write(value.coreVersion, into: &buf)
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeApplicationSdkInfo_lift(_ buf: RustBuffer) throws -> ApplicationSdkInfo {
+    return try FfiConverterTypeApplicationSdkInfo.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeApplicationSdkInfo_lower(_ value: ApplicationSdkInfo) -> RustBuffer {
+    return FfiConverterTypeApplicationSdkInfo.lower(value)
 }
 
 
@@ -1916,6 +1994,30 @@ fileprivate struct FfiConverterOptionTimestamp: FfiConverterRustBuffer {
         switch try readInt(&buf) as Int8 {
         case 0: return nil
         case 1: return try FfiConverterTimestamp.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeApplicationSdkInfo: FfiConverterRustBuffer {
+    typealias SwiftType = ApplicationSdkInfo?
+
+    internal static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeApplicationSdkInfo.write(value, into: &buf)
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeApplicationSdkInfo.read(from: &buf)
         default: throw UniffiInternalError.unexpectedOptionalTag
         }
     }
