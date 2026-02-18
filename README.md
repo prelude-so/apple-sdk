@@ -81,7 +81,7 @@ With these steps you should have a working version of the SDK in your project.
 
 Depending on the mechanism that you use to upload your app to the App Store, you may find errors related to the `PreludeCore.xcframework` file.
 
-If you encounter this error, try uploading the app again without the `PreludeCore.xcframework` with the flag `--use-old-altool`:
+If you encounter this error, try uploading the app again with the flag `--use-old-altool`:
 
 ```
 xcrun altool --upload-app --type ios --file "path/to/your/app.ipa" --apiKey "YourAPIKey" --apiIssuer "YourIssuerID" --use-old-altool
