@@ -182,6 +182,7 @@ extension Prelude {
     /// Collect and dispatch signals to the Prelude API. It then calls the completion handler with the result.
     /// - Parameter scope: the signals data gathering scope.
     /// - Parameter timeout: the timeout for the network requests.
+    /// - Parameter maxRetries: maximum number of retries allowed per failing network request.
     /// - Parameter completion: the completion handler.
     public func dispatchSignals(
         scope: SignalsScope = .full,
@@ -220,21 +221,22 @@ extension Prelude {
                 endpointURL.appendingPathComponent("/v1/signals"),
                 method: hasPayload ? "POST" : "OPTIONS"
             )
-            request.header("Connection", "close")
-            request.header("User-Agent", userAgent)
-            request.header("X-SDK-DispatchID", dispatchId)
-            request.header("X-SDK-Key", sdkKey)
-            request.header("X-SDK-Implemented-Features", "\(implementedFeatures.rawValue)")
+            request.header("connection", "close")
+            request.header("user-agent", userAgent)
+            request.header("x-sdk-dispatchid", dispatchId)
+            request.header("x-sdk-key", sdkKey)
+            request.header("x-sdk-implemented-features", "\(implementedFeatures.rawValue)")
             if let interfaceType {
                 request.interfaceType(interfaceType)
             }
             if let payload {
-                request.header("Content-Encoding", "deflate")
-                request.header("Content-Type", "application/vnd.prelude.signals")
+                request.header("content-encoding", "deflate")
+                request.header("content-type", "application/vnd.prelude.signals")
                 request.body(payload)
             }
             request.timeout(timeout)
             request.maxRetries(maxRetries)
+            request.allowInsecureTLS(configuration.allowInsecureTLS)
 
             do {
                 _ = try await request.send()

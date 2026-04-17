@@ -27,7 +27,10 @@ extension Hardware: CollectableFamily {
         }
 
         var cpuFrequency: Int32? {
-            try? Sysctl.value(to: Int32.self, for: [CTL_HW, HW_CPU_FREQ])
+            guard let hertz = try? Sysctl.value(to: UInt32.self, for: [CTL_HW, HW_CPU_FREQ]) else {
+                return nil
+            }
+            return Int32(hertz / 1000)
         }
 
         var memorySize: Int64? {

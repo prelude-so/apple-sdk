@@ -1,4 +1,6 @@
 # Readme
+import AppStoreUpload from './app-store-upload.mdx';
+
 ### Usage
 
 The Apple SDK allows you to capture certain device signals that will be reported back to Prelude and perform silent verification of mobile devices.
@@ -77,12 +79,14 @@ Import this `.podspec` file into your project and run normally.
 
 With these steps you should have a working version of the SDK in your project.
 
-#### Uploading your app to the App Store
+<AppStoreUpload />
 
-Depending on the mechanism that you use to upload your app to the App Store, you may find errors related to the `PreludeCore.xcframework` file.
+If you use Fastlane to build your app, you may want to configure it instead in your lane similar to this:
 
-If you encounter this error, try uploading the app again with the flag `--use-old-altool`:
-
-```
-xcrun altool --upload-app --type ios --file "path/to/your/app.ipa" --apiKey "YourAPIKey" --apiIssuer "YourIssuerID" --use-old-altool
+```ruby
+before_all do
+.....
+    ENV["DELIVER_ALTOOL_ADDITIONAL_UPLOAD_PARAMETERS"] = "--use-old-altool"
+....
+end
 ```

@@ -4,7 +4,7 @@ enum Version {
     static let major = 0
 
     /// The minor version.
-    static let minor = 4
+    static let minor = 5
 
     /// The patch version.
     static let patch = 0
