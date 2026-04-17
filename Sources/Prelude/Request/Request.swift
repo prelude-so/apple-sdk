@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import Security
 
 /// Request is a network HTTP request.
 struct Request {
@@ -27,6 +28,10 @@ struct Request {
 
     private var operationDeadline: Date?
 
+    private var maxTLSVersion: tls_protocol_version_t?
+
+    private var allowInsecureTLS: Bool = false
+
     /// Create a new network HTTP request.
     /// - Parameters:
     ///   - url: the request URL.
@@ -36,6 +41,13 @@ struct Request {
         self.method = method
         headers = [:]
     }
+}
+
+/// The result of sending a single-hop HTTP request.
+enum Response {
+    case success(Data?)
+    case redirect(method: String, url: URL, responseHeaders: [String: String])
+    case error(String)
 }
 
 extension Request {
@@ -77,12 +89,30 @@ extension Request {
         self.maxRetries = maxRetries
     }
 
+    /// Set the maximum number of redirects to follow before returning the last redirect response.
+    /// - Parameter maxRedirects: the maximum number of redirects.
+    mutating func maxRedirects(_ maxRedirects: Int) {
+        self.maxRedirects = maxRedirects
+    }
+
     /// Set the total operation timeout. The request (including all redirects and retries)
     /// must complete within this duration. Each individual hop uses a shorter per-hop timeout,
     /// capped at the remaining operation time.
     /// - Parameter timeout: the total operation timeout.
     mutating func operationTimeout(_ timeout: TimeInterval) {
         operationDeadline = Date().addingTimeInterval(timeout)
+    }
+
+    /// Set the maximum TLS protocol version for the connection.
+    /// - Parameter version: the maximum TLS version to negotiate.
+    mutating func maxTLSVersion(_ version: tls_protocol_version_t) {
+        maxTLSVersion = version
+    }
+
+    /// Allow insecure TLS by skipping certificate validation.
+    /// - Parameter state: set to true to disable TLS certificate validation.
+    mutating func allowInsecureTLS(_ state: Bool) {
+        allowInsecureTLS = state
     }
 
     private func clone(url: URL, maxRedirects: Int? = nil, retryAttempt: Int? = nil) -> Request {
@@ -94,12 +124,15 @@ extension Request {
         request.timeout = timeout
         request.maxRetries = maxRetries
         request.retryAttempt = retryAttempt ?? self.retryAttempt
+        request.body = body
         request.operationDeadline = operationDeadline
+        request.maxTLSVersion = maxTLSVersion
+        request.allowInsecureTLS = allowInsecureTLS
         return request
     }
 
-    /// Send the HTTP request.
-    func send() async throws -> Data? {
+    /// Send the HTTP request and return the response.
+    func send() async throws -> Response {
         if hasTimedOut() {
             throw SDKError.requestError("Operation timed out.")
         }
@@ -108,7 +141,24 @@ extension Request {
             throw SDKError.internalError("missing URL host")
         }
 
-        let parameters = NWParameters(tls: .init())
+        let tlsOptions = NWProtocolTLS.Options()
+        if let maxVersion = maxTLSVersion {
+            sec_protocol_options_set_max_tls_protocol_version(
+                tlsOptions.securityProtocolOptions,
+                maxVersion
+            )
+        }
+
+        if allowInsecureTLS {
+            sec_protocol_options_set_verify_block(
+                tlsOptions.securityProtocolOptions,
+                { _, _, complete in
+                    complete(true)
+                },
+                .global()
+            )
+        }
+        let parameters = NWParameters(tls: tlsOptions)
         parameters.preferNoProxies = true
         if interfaceType != .other {
             parameters.requiredInterfaceType = interfaceType
@@ -122,19 +172,23 @@ extension Request {
         ).takeRetainedValue()
 
         CFHTTPMessageSetHeaderFieldValue(request,
-                                         "Host" as CFString,
+                                         "host" as CFString,
                                          host as CFString)
         CFHTTPMessageSetHeaderFieldValue(request,
-                                         "X-SDK-Request-Date" as CFString,
+                                         "x-sdk-request-date" as CFString,
                                          Date().RFC3339Format() as CFString)
         for (key, value) in headers {
             CFHTTPMessageSetHeaderFieldValue(request, key as CFString, value as CFString)
         }
 
+        CFHTTPMessageSetHeaderFieldValue(request,
+                                         "x-sdk-retry-attempt" as CFString,
+                                         String(retryAttempt) as CFString)
+
         if let body {
             CFHTTPMessageSetHeaderFieldValue(
                 request,
-                "Content-Length" as CFString,
+                "content-length" as CFString,
                 String(body.count) as CFString
             )
 
@@ -197,15 +251,19 @@ extension Request {
                     case let .failure(status):
                         continuation.resume(throwing: SDKError.requestError("HTTP server error: \(status)"))
 
-                    case let .redirect(method, url):
+                    case let .redirect(method, url, responseHeaders):
                         if !self.followRedirects || self.maxRedirects == 0 {
-                            continuation.resume(returning: nil)
+                            continuation.resume(returning: .redirect(
+                                method: method, url: url, responseHeaders: responseHeaders
+                            ))
                         } else if self.hasTimedOut() {
                             continuation.resume(throwing: SDKError.requestError("Operation timed out."))
                         } else {
                             Task {
-                                var request = self.clone(url: url, maxRedirects: self.maxRedirects - 1, retryAttempt: 0)
-
+                                let request = self.clone(
+                                    url: url,
+                                    maxRedirects: self.maxRedirects - 1, retryAttempt: 0
+                                )
                                 do {
                                     try await continuation.resume(returning: request.send())
                                 } catch {
@@ -215,10 +273,10 @@ extension Request {
                         }
 
                     case let .success(data):
-                        continuation.resume(returning: data)
+                        continuation.resume(returning: .success(data))
                     }
                 } else {
-                    continuation.resume(returning: nil)
+                    continuation.resume(returning: .success(nil))
                 }
             }
         }
@@ -246,7 +304,7 @@ extension Request {
         return min(Self.perHopTimeout, remaining)
     }
 
-    private func handleRetry(continuation: CheckedContinuation<Data?, Error>) {
+    private func handleRetry(continuation: CheckedContinuation<Response, Error>) {
         if hasTimedOut() {
             continuation.resume(throwing: SDKError.requestError("Operation timed out."))
         } else if maxRetries > 0, retryAttempt < maxRetries {
@@ -277,9 +335,9 @@ extension Request {
         return timer
     }
 
-    enum ParseHTTPMessageResult {
+    private enum ParseHTTPMessageResult {
         case failure(Int)
-        case redirect(String, URL)
+        case redirect(String, URL, [String: String])
         case retryable(Int)
         case success(Data?)
     }
@@ -296,7 +354,9 @@ extension Request {
                 .takeRetainedValue() as? String, let url = URL(string: location) else {
                 return .failure(status)
             }
-            return .redirect((307 ... 308).contains(status) ? method : "GET", url)
+            let responseHeaders = CFHTTPMessageCopyAllHeaderFields(message)?
+                .takeRetainedValue() as? [String: String] ?? [:]
+            return .redirect((307 ... 308).contains(status) ? method : "GET", url, responseHeaders)
 
         case 500 ..< 600:
             return .retryable(status)

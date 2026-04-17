@@ -36,7 +36,7 @@ private let providerQuirksMap: [String: ProviderQuirks] = [
     // Bouygues Telecom (French carrier)
     "bouyguestelecom.fr": ProviderQuirks(
         headers: [
-            "Accept": "text/html;q=0.9,application/xhtml+xml,application/xml,application/json,*/*;q=0.8",
+            "accept": "text/html;q=0.9,application/xhtml+xml,application/xml,application/json,*/*;q=0.8",
         ]
     ),
 ]

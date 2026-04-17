@@ -2,6 +2,12 @@
 
 Prelude Apple SDK Change Log
 
+## [0.5.0] - 2026-04-17
+
+- Improved Silent Network Authentication per carrier configuration.
+- Strengthen device signals.
+- Improved the signal dispatch algorithm.
+
 ## [0.4.0] - 2026-02-16
 
 - Implemented auto-retries during Silent Network Authentication redirection flow.

@@ -17,24 +17,31 @@ public struct Configuration {
     /// The maximum number of network retries in case of server error or timeout
     var maxRetries: Int = 3
 
+    /// Whether TLS certificate validation should be skipped.
+    /// Defaults to false and should only be enabled for local testing.
+    var allowInsecureTLS: Bool = false
+
     /// Initialize the configuration.
     /// - Parameters:
     ///   - sdkKey: the SDK key. (Note: you can get one from the Prelude Dashboard)
     ///   - endpoint: the endpoint address of the Prelude API.
     ///   - timeout: the default timeout for network requests.
     ///   - maxRetries: the default maximum number of retries allowed per failing network request.
+    ///   - allowInsecureTLS: set to true to bypass TLS certificate validation.
     public init(
         sdkKey: String,
         endpoint: Endpoint = .default,
         implementedFeatures: Features = [],
         timeout: TimeInterval = 5.0,
-        maxRetries: Int = 3
+        maxRetries: Int = 3,
+        allowInsecureTLS: Bool = false
     ) {
         self.sdkKey = sdkKey
         self.endpoint = endpoint
         self.implementedFeatures = implementedFeatures
         self.timeout = timeout
         self.maxRetries = maxRetries
+        self.allowInsecureTLS = allowInsecureTLS
     }
 }
 

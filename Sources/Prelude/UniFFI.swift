@@ -567,6 +567,292 @@ fileprivate struct FfiConverterTimestamp: FfiConverterRustBuffer {
 }
 
 
+internal struct AndroidBuild {
+    internal var board: String?
+    internal var bootloader: String?
+    internal var brand: String?
+    internal var device: String?
+    internal var display: String?
+    internal var fingerprint: String?
+    internal var hardware: String?
+    internal var host: String?
+    internal var id: String?
+    internal var product: String?
+    internal var supportedAbis: [String]?
+    internal var supported32BitAbis: [String]?
+    internal var supported64BitAbis: [String]?
+    internal var tags: String?
+    internal var buildType: String?
+    internal var time: Int64?
+    internal var user: String?
+    internal var versionBaseOs: String?
+    internal var versionCodename: String?
+    internal var versionIncremental: String?
+    internal var versionMediaPerformanceClass: Int32?
+    internal var versionPreviewSdkInt: Int32?
+    internal var versionReleaseOrCodename: String?
+    internal var versionSdkInt: Int32?
+    internal var versionSecurityPatch: String?
+    internal var socManufacturer: String?
+    internal var socModel: String?
+    internal var odmSku: String?
+    internal var sku: String?
+
+    // Default memberwise initializers are never public by default, so we
+    // declare one manually.
+    internal init(board: String?, bootloader: String?, brand: String?, device: String?, display: String?, fingerprint: String?, hardware: String?, host: String?, id: String?, product: String?, supportedAbis: [String]?, supported32BitAbis: [String]?, supported64BitAbis: [String]?, tags: String?, buildType: String?, time: Int64?, user: String?, versionBaseOs: String?, versionCodename: String?, versionIncremental: String?, versionMediaPerformanceClass: Int32?, versionPreviewSdkInt: Int32?, versionReleaseOrCodename: String?, versionSdkInt: Int32?, versionSecurityPatch: String?, socManufacturer: String?, socModel: String?, odmSku: String?, sku: String?) {
+        self.board = board
+        self.bootloader = bootloader
+        self.brand = brand
+        self.device = device
+        self.display = display
+        self.fingerprint = fingerprint
+        self.hardware = hardware
+        self.host = host
+        self.id = id
+        self.product = product
+        self.supportedAbis = supportedAbis
+        self.supported32BitAbis = supported32BitAbis
+        self.supported64BitAbis = supported64BitAbis
+        self.tags = tags
+        self.buildType = buildType
+        self.time = time
+        self.user = user
+        self.versionBaseOs = versionBaseOs
+        self.versionCodename = versionCodename
+        self.versionIncremental = versionIncremental
+        self.versionMediaPerformanceClass = versionMediaPerformanceClass
+        self.versionPreviewSdkInt = versionPreviewSdkInt
+        self.versionReleaseOrCodename = versionReleaseOrCodename
+        self.versionSdkInt = versionSdkInt
+        self.versionSecurityPatch = versionSecurityPatch
+        self.socManufacturer = socManufacturer
+        self.socModel = socModel
+        self.odmSku = odmSku
+        self.sku = sku
+    }
+}
+
+#if compiler(>=6)
+extension AndroidBuild: Sendable {}
+#endif
+
+
+extension AndroidBuild: Equatable, Hashable {
+    internal static func ==(lhs: AndroidBuild, rhs: AndroidBuild) -> Bool {
+        if lhs.board != rhs.board {
+            return false
+        }
+        if lhs.bootloader != rhs.bootloader {
+            return false
+        }
+        if lhs.brand != rhs.brand {
+            return false
+        }
+        if lhs.device != rhs.device {
+            return false
+        }
+        if lhs.display != rhs.display {
+            return false
+        }
+        if lhs.fingerprint != rhs.fingerprint {
+            return false
+        }
+        if lhs.hardware != rhs.hardware {
+            return false
+        }
+        if lhs.host != rhs.host {
+            return false
+        }
+        if lhs.id != rhs.id {
+            return false
+        }
+        if lhs.product != rhs.product {
+            return false
+        }
+        if lhs.supportedAbis != rhs.supportedAbis {
+            return false
+        }
+        if lhs.supported32BitAbis != rhs.supported32BitAbis {
+            return false
+        }
+        if lhs.supported64BitAbis != rhs.supported64BitAbis {
+            return false
+        }
+        if lhs.tags != rhs.tags {
+            return false
+        }
+        if lhs.buildType != rhs.buildType {
+            return false
+        }
+        if lhs.time != rhs.time {
+            return false
+        }
+        if lhs.user != rhs.user {
+            return false
+        }
+        if lhs.versionBaseOs != rhs.versionBaseOs {
+            return false
+        }
+        if lhs.versionCodename != rhs.versionCodename {
+            return false
+        }
+        if lhs.versionIncremental != rhs.versionIncremental {
+            return false
+        }
+        if lhs.versionMediaPerformanceClass != rhs.versionMediaPerformanceClass {
+            return false
+        }
+        if lhs.versionPreviewSdkInt != rhs.versionPreviewSdkInt {
+            return false
+        }
+        if lhs.versionReleaseOrCodename != rhs.versionReleaseOrCodename {
+            return false
+        }
+        if lhs.versionSdkInt != rhs.versionSdkInt {
+            return false
+        }
+        if lhs.versionSecurityPatch != rhs.versionSecurityPatch {
+            return false
+        }
+        if lhs.socManufacturer != rhs.socManufacturer {
+            return false
+        }
+        if lhs.socModel != rhs.socModel {
+            return false
+        }
+        if lhs.odmSku != rhs.odmSku {
+            return false
+        }
+        if lhs.sku != rhs.sku {
+            return false
+        }
+        return true
+    }
+
+    internal func hash(into hasher: inout Hasher) {
+        hasher.combine(board)
+        hasher.combine(bootloader)
+        hasher.combine(brand)
+        hasher.combine(device)
+        hasher.combine(display)
+        hasher.combine(fingerprint)
+        hasher.combine(hardware)
+        hasher.combine(host)
+        hasher.combine(id)
+        hasher.combine(product)
+        hasher.combine(supportedAbis)
+        hasher.combine(supported32BitAbis)
+        hasher.combine(supported64BitAbis)
+        hasher.combine(tags)
+        hasher.combine(buildType)
+        hasher.combine(time)
+        hasher.combine(user)
+        hasher.combine(versionBaseOs)
+        hasher.combine(versionCodename)
+        hasher.combine(versionIncremental)
+        hasher.combine(versionMediaPerformanceClass)
+        hasher.combine(versionPreviewSdkInt)
+        hasher.combine(versionReleaseOrCodename)
+        hasher.combine(versionSdkInt)
+        hasher.combine(versionSecurityPatch)
+        hasher.combine(socManufacturer)
+        hasher.combine(socModel)
+        hasher.combine(odmSku)
+        hasher.combine(sku)
+    }
+}
+
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal struct FfiConverterTypeAndroidBuild: FfiConverterRustBuffer {
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> AndroidBuild {
+        return
+            try AndroidBuild(
+                board: FfiConverterOptionString.read(from: &buf), 
+                bootloader: FfiConverterOptionString.read(from: &buf), 
+                brand: FfiConverterOptionString.read(from: &buf), 
+                device: FfiConverterOptionString.read(from: &buf), 
+                display: FfiConverterOptionString.read(from: &buf), 
+                fingerprint: FfiConverterOptionString.read(from: &buf), 
+                hardware: FfiConverterOptionString.read(from: &buf), 
+                host: FfiConverterOptionString.read(from: &buf), 
+                id: FfiConverterOptionString.read(from: &buf), 
+                product: FfiConverterOptionString.read(from: &buf), 
+                supportedAbis: FfiConverterOptionSequenceString.read(from: &buf), 
+                supported32BitAbis: FfiConverterOptionSequenceString.read(from: &buf), 
+                supported64BitAbis: FfiConverterOptionSequenceString.read(from: &buf), 
+                tags: FfiConverterOptionString.read(from: &buf), 
+                buildType: FfiConverterOptionString.read(from: &buf), 
+                time: FfiConverterOptionInt64.read(from: &buf), 
+                user: FfiConverterOptionString.read(from: &buf), 
+                versionBaseOs: FfiConverterOptionString.read(from: &buf), 
+                versionCodename: FfiConverterOptionString.read(from: &buf), 
+                versionIncremental: FfiConverterOptionString.read(from: &buf), 
+                versionMediaPerformanceClass: FfiConverterOptionInt32.read(from: &buf), 
+                versionPreviewSdkInt: FfiConverterOptionInt32.read(from: &buf), 
+                versionReleaseOrCodename: FfiConverterOptionString.read(from: &buf), 
+                versionSdkInt: FfiConverterOptionInt32.read(from: &buf), 
+                versionSecurityPatch: FfiConverterOptionString.read(from: &buf), 
+                socManufacturer: FfiConverterOptionString.read(from: &buf), 
+                socModel: FfiConverterOptionString.read(from: &buf), 
+                odmSku: FfiConverterOptionString.read(from: &buf), 
+                sku: FfiConverterOptionString.read(from: &buf)
+        )
+    }
+
+    internal static func write(_ value: AndroidBuild, into buf: inout [UInt8]) {
+        FfiConverterOptionString.write(value.board, into: &buf)
+        FfiConverterOptionString.write(value.bootloader, into: &buf)
+        FfiConverterOptionString.write(value.brand, into: &buf)
+        FfiConverterOptionString.write(value.device, into: &buf)
+        FfiConverterOptionString.write(value.display, into: &buf)
+        FfiConverterOptionString.write(value.fingerprint, into: &buf)
+        FfiConverterOptionString.write(value.hardware, into: &buf)
+        FfiConverterOptionString.write(value.host, into: &buf)
+        FfiConverterOptionString.write(value.id, into: &buf)
+        FfiConverterOptionString.write(value.product, into: &buf)
+        FfiConverterOptionSequenceString.write(value.supportedAbis, into: &buf)
+        FfiConverterOptionSequenceString.write(value.supported32BitAbis, into: &buf)
+        FfiConverterOptionSequenceString.write(value.supported64BitAbis, into: &buf)
+        FfiConverterOptionString.write(value.tags, into: &buf)
+        FfiConverterOptionString.write(value.buildType, into: &buf)
+        FfiConverterOptionInt64.write(value.time, into: &buf)
+        FfiConverterOptionString.write(value.user, into: &buf)
+        FfiConverterOptionString.write(value.versionBaseOs, into: &buf)
+        FfiConverterOptionString.write(value.versionCodename, into: &buf)
+        FfiConverterOptionString.write(value.versionIncremental, into: &buf)
+        FfiConverterOptionInt32.write(value.versionMediaPerformanceClass, into: &buf)
+        FfiConverterOptionInt32.write(value.versionPreviewSdkInt, into: &buf)
+        FfiConverterOptionString.write(value.versionReleaseOrCodename, into: &buf)
+        FfiConverterOptionInt32.write(value.versionSdkInt, into: &buf)
+        FfiConverterOptionString.write(value.versionSecurityPatch, into: &buf)
+        FfiConverterOptionString.write(value.socManufacturer, into: &buf)
+        FfiConverterOptionString.write(value.socModel, into: &buf)
+        FfiConverterOptionString.write(value.odmSku, into: &buf)
+        FfiConverterOptionString.write(value.sku, into: &buf)
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeAndroidBuild_lift(_ buf: RustBuffer) throws -> AndroidBuild {
+    return try FfiConverterTypeAndroidBuild.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeAndroidBuild_lower(_ value: AndroidBuild) -> RustBuffer {
+    return FfiConverterTypeAndroidBuild.lower(value)
+}
+
+
 internal struct Application {
     internal var name: String?
     internal var version: String?
@@ -1032,10 +1318,12 @@ internal struct Device {
     internal var batteryState: BatteryState?
     internal var fontsDigest: String?
     internal var simulator: Bool?
+    internal var webProperties: DeviceWebProperties?
+    internal var androidProperties: DeviceAndroidProperties?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    internal init(platform: Platform?, bootTime: Date?, hostname: String?, kernelVersion: String?, osBuild: String?, osRelease: String?, osType: String?, systemName: String?, systemVersion: String?, vendorId: String?, name: String?, localeCurrent: String?, localePreferred: [String]?, timeZoneCurrent: String?, batteryLevel: Float?, batteryState: BatteryState?, fontsDigest: String?, simulator: Bool?) {
+    internal init(platform: Platform?, bootTime: Date?, hostname: String?, kernelVersion: String?, osBuild: String?, osRelease: String?, osType: String?, systemName: String?, systemVersion: String?, vendorId: String?, name: String?, localeCurrent: String?, localePreferred: [String]?, timeZoneCurrent: String?, batteryLevel: Float?, batteryState: BatteryState?, fontsDigest: String?, simulator: Bool?, webProperties: DeviceWebProperties?, androidProperties: DeviceAndroidProperties?) {
         self.platform = platform
         self.bootTime = bootTime
         self.hostname = hostname
@@ -1054,6 +1342,8 @@ internal struct Device {
         self.batteryState = batteryState
         self.fontsDigest = fontsDigest
         self.simulator = simulator
+        self.webProperties = webProperties
+        self.androidProperties = androidProperties
     }
 }
 
@@ -1118,6 +1408,12 @@ extension Device: Equatable, Hashable {
         if lhs.simulator != rhs.simulator {
             return false
         }
+        if lhs.webProperties != rhs.webProperties {
+            return false
+        }
+        if lhs.androidProperties != rhs.androidProperties {
+            return false
+        }
         return true
     }
 
@@ -1140,6 +1436,8 @@ extension Device: Equatable, Hashable {
         hasher.combine(batteryState)
         hasher.combine(fontsDigest)
         hasher.combine(simulator)
+        hasher.combine(webProperties)
+        hasher.combine(androidProperties)
     }
 }
 
@@ -1169,7 +1467,9 @@ internal struct FfiConverterTypeDevice: FfiConverterRustBuffer {
                 batteryLevel: FfiConverterOptionFloat.read(from: &buf), 
                 batteryState: FfiConverterOptionTypeBatteryState.read(from: &buf), 
                 fontsDigest: FfiConverterOptionString.read(from: &buf), 
-                simulator: FfiConverterOptionBool.read(from: &buf)
+                simulator: FfiConverterOptionBool.read(from: &buf), 
+                webProperties: FfiConverterOptionTypeDeviceWebProperties.read(from: &buf), 
+                androidProperties: FfiConverterOptionTypeDeviceAndroidProperties.read(from: &buf)
         )
     }
 
@@ -1192,6 +1492,8 @@ internal struct FfiConverterTypeDevice: FfiConverterRustBuffer {
         FfiConverterOptionTypeBatteryState.write(value.batteryState, into: &buf)
         FfiConverterOptionString.write(value.fontsDigest, into: &buf)
         FfiConverterOptionBool.write(value.simulator, into: &buf)
+        FfiConverterOptionTypeDeviceWebProperties.write(value.webProperties, into: &buf)
+        FfiConverterOptionTypeDeviceAndroidProperties.write(value.androidProperties, into: &buf)
     }
 }
 
@@ -1208,6 +1510,146 @@ internal func FfiConverterTypeDevice_lift(_ buf: RustBuffer) throws -> Device {
 #endif
 internal func FfiConverterTypeDevice_lower(_ value: Device) -> RustBuffer {
     return FfiConverterTypeDevice.lower(value)
+}
+
+
+internal struct DeviceAndroidProperties {
+    internal var build: AndroidBuild?
+
+    // Default memberwise initializers are never public by default, so we
+    // declare one manually.
+    internal init(build: AndroidBuild?) {
+        self.build = build
+    }
+}
+
+#if compiler(>=6)
+extension DeviceAndroidProperties: Sendable {}
+#endif
+
+
+extension DeviceAndroidProperties: Equatable, Hashable {
+    internal static func ==(lhs: DeviceAndroidProperties, rhs: DeviceAndroidProperties) -> Bool {
+        if lhs.build != rhs.build {
+            return false
+        }
+        return true
+    }
+
+    internal func hash(into hasher: inout Hasher) {
+        hasher.combine(build)
+    }
+}
+
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal struct FfiConverterTypeDeviceAndroidProperties: FfiConverterRustBuffer {
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> DeviceAndroidProperties {
+        return
+            try DeviceAndroidProperties(
+                build: FfiConverterOptionTypeAndroidBuild.read(from: &buf)
+        )
+    }
+
+    internal static func write(_ value: DeviceAndroidProperties, into buf: inout [UInt8]) {
+        FfiConverterOptionTypeAndroidBuild.write(value.build, into: &buf)
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeDeviceAndroidProperties_lift(_ buf: RustBuffer) throws -> DeviceAndroidProperties {
+    return try FfiConverterTypeDeviceAndroidProperties.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeDeviceAndroidProperties_lower(_ value: DeviceAndroidProperties) -> RustBuffer {
+    return FfiConverterTypeDeviceAndroidProperties.lower(value)
+}
+
+
+internal struct DeviceWebProperties {
+    internal var automationControlled: Bool?
+    internal var notificationApiPermission: String?
+    internal var permissionsApiStatuses: [String: WebPermissionStatus]?
+
+    // Default memberwise initializers are never public by default, so we
+    // declare one manually.
+    internal init(automationControlled: Bool?, notificationApiPermission: String?, permissionsApiStatuses: [String: WebPermissionStatus]?) {
+        self.automationControlled = automationControlled
+        self.notificationApiPermission = notificationApiPermission
+        self.permissionsApiStatuses = permissionsApiStatuses
+    }
+}
+
+#if compiler(>=6)
+extension DeviceWebProperties: Sendable {}
+#endif
+
+
+extension DeviceWebProperties: Equatable, Hashable {
+    internal static func ==(lhs: DeviceWebProperties, rhs: DeviceWebProperties) -> Bool {
+        if lhs.automationControlled != rhs.automationControlled {
+            return false
+        }
+        if lhs.notificationApiPermission != rhs.notificationApiPermission {
+            return false
+        }
+        if lhs.permissionsApiStatuses != rhs.permissionsApiStatuses {
+            return false
+        }
+        return true
+    }
+
+    internal func hash(into hasher: inout Hasher) {
+        hasher.combine(automationControlled)
+        hasher.combine(notificationApiPermission)
+        hasher.combine(permissionsApiStatuses)
+    }
+}
+
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal struct FfiConverterTypeDeviceWebProperties: FfiConverterRustBuffer {
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> DeviceWebProperties {
+        return
+            try DeviceWebProperties(
+                automationControlled: FfiConverterOptionBool.read(from: &buf), 
+                notificationApiPermission: FfiConverterOptionString.read(from: &buf), 
+                permissionsApiStatuses: FfiConverterOptionDictionaryStringTypeWebPermissionStatus.read(from: &buf)
+        )
+    }
+
+    internal static func write(_ value: DeviceWebProperties, into buf: inout [UInt8]) {
+        FfiConverterOptionBool.write(value.automationControlled, into: &buf)
+        FfiConverterOptionString.write(value.notificationApiPermission, into: &buf)
+        FfiConverterOptionDictionaryStringTypeWebPermissionStatus.write(value.permissionsApiStatuses, into: &buf)
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeDeviceWebProperties_lift(_ buf: RustBuffer) throws -> DeviceWebProperties {
+    return try FfiConverterTypeDeviceWebProperties.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeDeviceWebProperties_lower(_ value: DeviceWebProperties) -> RustBuffer {
+    return FfiConverterTypeDeviceWebProperties.lower(value)
 }
 
 
@@ -1855,6 +2297,90 @@ extension Platform: Equatable, Hashable {}
 
 
 
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+
+internal enum WebPermissionStatus {
+    
+    case unspecified
+    case granted
+    case denied
+    case prompt
+}
+
+
+#if compiler(>=6)
+extension WebPermissionStatus: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal struct FfiConverterTypeWebPermissionStatus: FfiConverterRustBuffer {
+    typealias SwiftType = WebPermissionStatus
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> WebPermissionStatus {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .unspecified
+        
+        case 2: return .granted
+        
+        case 3: return .denied
+        
+        case 4: return .prompt
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    internal static func write(_ value: WebPermissionStatus, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .unspecified:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .granted:
+            writeInt(&buf, Int32(2))
+        
+        
+        case .denied:
+            writeInt(&buf, Int32(3))
+        
+        
+        case .prompt:
+            writeInt(&buf, Int32(4))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeWebPermissionStatus_lift(_ buf: RustBuffer) throws -> WebPermissionStatus {
+    return try FfiConverterTypeWebPermissionStatus.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+internal func FfiConverterTypeWebPermissionStatus_lower(_ value: WebPermissionStatus) -> RustBuffer {
+    return FfiConverterTypeWebPermissionStatus.lower(value)
+}
+
+
+extension WebPermissionStatus: Equatable, Hashable {}
+
+
+
+
+
+
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
@@ -2002,6 +2528,30 @@ fileprivate struct FfiConverterOptionTimestamp: FfiConverterRustBuffer {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
+fileprivate struct FfiConverterOptionTypeAndroidBuild: FfiConverterRustBuffer {
+    typealias SwiftType = AndroidBuild?
+
+    internal static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeAndroidBuild.write(value, into: &buf)
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeAndroidBuild.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 fileprivate struct FfiConverterOptionTypeApplicationSdkInfo: FfiConverterRustBuffer {
     typealias SwiftType = ApplicationSdkInfo?
 
@@ -2018,6 +2568,54 @@ fileprivate struct FfiConverterOptionTypeApplicationSdkInfo: FfiConverterRustBuf
         switch try readInt(&buf) as Int8 {
         case 0: return nil
         case 1: return try FfiConverterTypeApplicationSdkInfo.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeDeviceAndroidProperties: FfiConverterRustBuffer {
+    typealias SwiftType = DeviceAndroidProperties?
+
+    internal static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeDeviceAndroidProperties.write(value, into: &buf)
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeDeviceAndroidProperties.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeDeviceWebProperties: FfiConverterRustBuffer {
+    typealias SwiftType = DeviceWebProperties?
+
+    internal static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeDeviceWebProperties.write(value, into: &buf)
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeDeviceWebProperties.read(from: &buf)
         default: throw UniffiInternalError.unexpectedOptionalTag
         }
     }
@@ -2146,6 +2744,30 @@ fileprivate struct FfiConverterOptionSequenceString: FfiConverterRustBuffer {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
+fileprivate struct FfiConverterOptionDictionaryStringTypeWebPermissionStatus: FfiConverterRustBuffer {
+    typealias SwiftType = [String: WebPermissionStatus]?
+
+    internal static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterDictionaryStringTypeWebPermissionStatus.write(value, into: &buf)
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterDictionaryStringTypeWebPermissionStatus.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 fileprivate struct FfiConverterSequenceString: FfiConverterRustBuffer {
     typealias SwiftType = [String]
 
@@ -2165,6 +2787,32 @@ fileprivate struct FfiConverterSequenceString: FfiConverterRustBuffer {
             seq.append(try FfiConverterString.read(from: &buf))
         }
         return seq
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterDictionaryStringTypeWebPermissionStatus: FfiConverterRustBuffer {
+    internal static func write(_ value: [String: WebPermissionStatus], into buf: inout [UInt8]) {
+        let len = Int32(value.count)
+        writeInt(&buf, len)
+        for (key, value) in value {
+            FfiConverterString.write(key, into: &buf)
+            FfiConverterTypeWebPermissionStatus.write(value, into: &buf)
+        }
+    }
+
+    internal static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> [String: WebPermissionStatus] {
+        let len: Int32 = try readInt(&buf)
+        var dict = [String: WebPermissionStatus]()
+        dict.reserveCapacity(Int(len))
+        for _ in 0..<len {
+            let key = try FfiConverterString.read(from: &buf)
+            let value = try FfiConverterTypeWebPermissionStatus.read(from: &buf)
+            dict[key] = value
+        }
+        return dict
     }
 }
 internal func coreVersion() -> String  {
