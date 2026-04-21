@@ -2,6 +2,13 @@
 
 Prelude Apple SDK Change Log
 
+## [0.5.1] - 2026-04-21
+
+- Fix iOS build failure in `Device.collect()`: pass `nil` for the new
+  `webProperties` and `androidProperties` fields on the UniFFI-generated
+  `Device` record (unblocks Apple SDK 0.5.0 consumers, including the
+  React Native SDK).
+
 ## [0.5.0] - 2026-04-17
 
 - Improved Silent Network Authentication per carrier configuration.
