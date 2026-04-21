@@ -144,7 +144,9 @@ extension Device: CollectableFamily {
             batteryLevel: batteryLevel,
             batteryState: batteryState,
             fontsDigest: fontsDigest,
-            simulator: simulator
+            simulator: simulator,
+            webProperties: nil,
+            androidProperties: nil
         )
     }
 }
