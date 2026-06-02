@@ -1320,10 +1320,11 @@ internal struct Device {
     internal var simulator: Bool?
     internal var webProperties: DeviceWebProperties?
     internal var androidProperties: DeviceAndroidProperties?
+    internal var screenBrightness: Float?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    internal init(platform: Platform?, bootTime: Date?, hostname: String?, kernelVersion: String?, osBuild: String?, osRelease: String?, osType: String?, systemName: String?, systemVersion: String?, vendorId: String?, name: String?, localeCurrent: String?, localePreferred: [String]?, timeZoneCurrent: String?, batteryLevel: Float?, batteryState: BatteryState?, fontsDigest: String?, simulator: Bool?, webProperties: DeviceWebProperties?, androidProperties: DeviceAndroidProperties?) {
+    internal init(platform: Platform?, bootTime: Date?, hostname: String?, kernelVersion: String?, osBuild: String?, osRelease: String?, osType: String?, systemName: String?, systemVersion: String?, vendorId: String?, name: String?, localeCurrent: String?, localePreferred: [String]?, timeZoneCurrent: String?, batteryLevel: Float?, batteryState: BatteryState?, fontsDigest: String?, simulator: Bool?, webProperties: DeviceWebProperties?, androidProperties: DeviceAndroidProperties?, screenBrightness: Float?) {
         self.platform = platform
         self.bootTime = bootTime
         self.hostname = hostname
@@ -1344,6 +1345,7 @@ internal struct Device {
         self.simulator = simulator
         self.webProperties = webProperties
         self.androidProperties = androidProperties
+        self.screenBrightness = screenBrightness
     }
 }
 
@@ -1414,6 +1416,9 @@ extension Device: Equatable, Hashable {
         if lhs.androidProperties != rhs.androidProperties {
             return false
         }
+        if lhs.screenBrightness != rhs.screenBrightness {
+            return false
+        }
         return true
     }
 
@@ -1438,6 +1443,7 @@ extension Device: Equatable, Hashable {
         hasher.combine(simulator)
         hasher.combine(webProperties)
         hasher.combine(androidProperties)
+        hasher.combine(screenBrightness)
     }
 }
 
@@ -1469,7 +1475,8 @@ internal struct FfiConverterTypeDevice: FfiConverterRustBuffer {
                 fontsDigest: FfiConverterOptionString.read(from: &buf), 
                 simulator: FfiConverterOptionBool.read(from: &buf), 
                 webProperties: FfiConverterOptionTypeDeviceWebProperties.read(from: &buf), 
-                androidProperties: FfiConverterOptionTypeDeviceAndroidProperties.read(from: &buf)
+                androidProperties: FfiConverterOptionTypeDeviceAndroidProperties.read(from: &buf), 
+                screenBrightness: FfiConverterOptionFloat.read(from: &buf)
         )
     }
 
@@ -1494,6 +1501,7 @@ internal struct FfiConverterTypeDevice: FfiConverterRustBuffer {
         FfiConverterOptionBool.write(value.simulator, into: &buf)
         FfiConverterOptionTypeDeviceWebProperties.write(value.webProperties, into: &buf)
         FfiConverterOptionTypeDeviceAndroidProperties.write(value.androidProperties, into: &buf)
+        FfiConverterOptionFloat.write(value.screenBrightness, into: &buf)
     }
 }
 

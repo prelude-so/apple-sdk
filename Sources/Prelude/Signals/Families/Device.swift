@@ -105,6 +105,14 @@ extension Device: CollectableFamily {
             #endif
         }
 
+        var screenBrightness: Float? {
+            #if os(iOS)
+                Float(UIScreen.main.brightness)
+            #else
+                nil
+            #endif
+        }
+
         var fontsDigest: String? {
             var hasher = SHA256()
 
@@ -146,7 +154,8 @@ extension Device: CollectableFamily {
             fontsDigest: fontsDigest,
             simulator: simulator,
             webProperties: nil,
-            androidProperties: nil
+            androidProperties: nil,
+            screenBrightness: screenBrightness
         )
     }
 }

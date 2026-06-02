@@ -1,5 +1,5 @@
 # Readme
-import AppStoreUpload from './app-store-upload.mdx';
+import AppStoreUpload from '/snippets/app-store-upload.mdx';
 
 ### Usage
 
@@ -10,13 +10,11 @@ It is provided as a regular Swift package that you can [import as a dependency d
 #### Gathering Device Signals
 Usage of the SDK to gather the signals is very simple, you just need to configure it with your SDK key and call a single dispatch function:
 
-```
+```objective-c
 let configuration = Configuration(sdkKey: "sdk_XXXXXXXXXXXX")
 let prelude = Prelude(configuration)
 let dispatchID = try? await prelude.dispatchSignals()
 ```
-
-***Important: When you generate the SDK key in the [Prelude dashboard](https://app.prelude.so/) you will be able to copy it and you should store it somewhere secure, as the dashboard will not allow you to display the same key again.***
 
 Once you get the dispatch ID you should report it back to your own back-end API to be forwarded in subsequent network calls.
 
@@ -64,16 +62,21 @@ end
 
 The final directory structure should look like this:
 
-```plaintext
-prelude-apple-sdk
-├── sdk
-│   ├── core
-│   │   └── PreludeCore.xcframework
-│   └── Sources
-│       └── Prelude
-│           ├── ...
-├── PreludeAppleSDK.podspec
-```
+<Tree>
+    <Tree.Folder name="prelude-apple-sdk" defaultOpen>
+        <Tree.Folder name="sdk" defaultOpen>
+            <Tree.Folder name="core" defaultOpen>
+                <Tree.File name="PreludeCore.xcframework" />
+            </Tree.Folder>
+            <Tree.Folder name="Sources" defaultOpen>
+                <Tree.Folder name="Prelude" defaultOpen>
+                    <Tree.File name="..." />
+                </Tree.Folder>
+            </Tree.Folder>
+        </Tree.Folder>
+        <Tree.File name="PreludeAppleSDK.podspec" />
+    </Tree.Folder>
+</Tree>
 
 Import this `.podspec` file into your project and run normally.
 

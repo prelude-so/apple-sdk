@@ -4,10 +4,10 @@ enum Version {
     static let major = 0
 
     /// The minor version.
-    static let minor = 5
+    static let minor = 6
 
     /// The patch version.
-    static let patch = 2
+    static let patch = 0
 
     /// The version string.
     static let versionString = "\(major).\(minor).\(patch)"
