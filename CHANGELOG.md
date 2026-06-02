@@ -2,6 +2,11 @@
 
 Prelude Apple SDK Change Log
 
+## [0.6.0] - 2026-06-02
+
+- Added collection of the device screen brightness signal on iOS.
+- Updated to SDK core 0.3.2; device signal hashing is now revision 4 (includes screen brightness).
+
 ## [0.5.2] - 2026-04-28
 
 - Fixed App Store Connect upload failure with modern (Xcode 26) `altool`. The embedded `PreludeCore.framework` now ships with a real `CFBundleIdentifier` (`so.prelude.PreludeCore`) and the correct `CFBundlePackageType` (`FMWK`). altool's preflight recognizes it as a framework rather than treating it as an unregistered application submission, so uploads to TestFlight and the App Store succeed without the `DELIVER_ALTOOL_ADDITIONAL_UPLOAD_PARAMETERS="--use-old-altool"` workaround.
