@@ -8,15 +8,6 @@ import CryptoKit
 
 extension Device: CollectableFamily {
     static func collect() -> Device {
-        var bootTime: Date? {
-            guard let value = try? Sysctl.value(to: timeval.self, for: [CTL_KERN, KERN_BOOTTIME]) else {
-                return nil
-            }
-
-            return Date(timeIntervalSince1970: TimeInterval(value.tv_sec) +
-                TimeInterval(value.tv_usec) / 1_000_000)
-        }
-
         var hostname: String? {
             try? Sysctl.string(for: [CTL_KERN, KERN_HOSTNAME])
         }
@@ -136,7 +127,8 @@ extension Device: CollectableFamily {
 
         return Device(
             platform: .apple,
-            bootTime: bootTime,
+            // Not collected: Apple does not allow the boot time to leave the device (Required Reason 35F9.1).
+            bootTime: nil,
             hostname: hostname,
             kernelVersion: kernelVersion,
             osBuild: osBuild,

@@ -2,6 +2,11 @@
 
 Prelude Apple SDK Change Log
 
+## [0.6.1] - 2026-11-18
+
+- Removed collection of the device boot time on iOS.
+- Fixed the CPU architecture signal on iOS: it is now read from the CPU type and subtype.
+
 ## [0.6.0] - 2026-06-02
 
 - Added collection of the device screen brightness signal on iOS.
