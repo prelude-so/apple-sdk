@@ -19,7 +19,18 @@ extension Hardware: CollectableFamily {
         }
 
         var architecture: String? {
-            try? Sysctl.string(for: [CTL_HW, HW_MACHINE_ARCH])
+            guard let cpuType = try? Sysctl.value(to: cpu_type_t.self, for: "hw.cputype"),
+                  let cpuSubtype = try? Sysctl.value(to: cpu_type_t.self, for: "hw.cpusubtype") else {
+                return nil
+            }
+            switch cpuType {
+            case CPU_TYPE_ARM64:
+                return cpuSubtype & 0x00FF_FFFF == CPU_SUBTYPE_ARM64E ? "arm64e" : "arm64"
+            case CPU_TYPE_X86, CPU_TYPE_X86_64:
+                return "x86_64"
+            default:
+                return nil
+            }
         }
 
         var cpuCount: Int32? {

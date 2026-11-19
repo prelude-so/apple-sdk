@@ -11,6 +11,13 @@ enum Sysctl {
         }
     }
 
+    /// Get string value for a given name.
+    /// - Parameter name: the dotted name to query (e.g. `hw.machine`).
+    /// - Returns: the string value, if any.
+    static func string(for name: String) throws -> String? {
+        try string(for: keys(for: name))
+    }
+
     /// Get value for a given set of keys.
     /// - Parameters:
     ///   - to: the type of the value.
@@ -20,6 +27,28 @@ enum Sysctl {
         try data(for: keys).withUnsafeBufferPointer { pointer -> T? in
             pointer.baseAddress?.withMemoryRebound(to: T.self, capacity: 1) { $0.pointee }
         }
+    }
+
+    /// Get value for a given name.
+    /// - Parameters:
+    ///   - to: the type of the value.
+    ///   - name: the dotted name to query (e.g. `hw.memsize`).
+    /// - Returns: the value, if any.
+    static func value<T>(to type: T.Type, for name: String) throws -> T? {
+        try value(to: type, for: keys(for: name))
+    }
+
+    /// Resolve a dotted name into its numeric keys.
+    private static func keys(for name: String) throws -> [Int32] {
+        var keys = [Int32](repeating: 0, count: Int(CTL_MAXNAME))
+        var count = keys.count
+
+        let errno = sysctlnametomib(name, &keys, &count)
+        guard errno == ERR_SUCCESS else {
+            throw SDKError.systemError("Cannot resolve sysctl name")
+        }
+
+        return Array(keys.prefix(count))
     }
 
     private static func data(for keys: [Int32]) throws -> [Int8] {

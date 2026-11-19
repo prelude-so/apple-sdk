@@ -7,6 +7,11 @@ The Apple SDK allows you to capture certain device signals that will be reported
 
 It is provided as a regular Swift package that you can [import as a dependency directly into your iOS application](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app).
 
+### Requirements
+
+- iOS deployment target **15.0+**
+- Xcode **15** or later
+
 #### Gathering Device Signals
 Usage of the SDK to gather the signals is very simple, you just need to configure it with your SDK key and call a single dispatch function:
 
